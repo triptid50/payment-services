@@ -1,0 +1,44 @@
+{
+  "payments" : [
+    {
+    "source_account" : {
+      "sort_code" : "123457",
+      "account_number" : "87654321",
+      "name" : "Mr Vince"
+    },
+    "transactions" : [ {
+      "beneficiary" : {
+        "sort_code" : "823120",
+        "account_number" : "12341990",
+        "name" : "Mr Brush"
+      },
+      "amount" : 450,
+      "balance" : 999550
+    }, {
+      "beneficiary" : {
+        "sort_code" : "213120",
+        "account_number" : "12341990",
+        "name" : "Mr Brush"
+      },
+      "amount" : 4950,
+      "balance" : 994600
+    } ],
+    "available_balance" : 994600
+  }, {
+    "source_account" : {
+      "sort_code" : "213457",
+      "account_number" : "87654321",
+      "name" : "Ms Tripti"
+    },
+    "transactions" : [ {
+      "beneficiary" : {
+        "sort_code" : "213120",
+        "account_number" : "12341990",
+        "name" : "Mr Brush"
+      },
+      "amount" : 4000,
+      "balance" : 996000
+    } ],
+    "available_balance" : 996000
+  } ]
+}

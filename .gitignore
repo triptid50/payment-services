@@ -1,0 +1,70 @@
+# Gradle #
+###################
+**/build/
+**/data
+**/bin
+**/out
+**/.gradle
+*.log
+
+bin
+.gradle
+gradle/wrapper/gradle-wrapper.properties
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.log.*
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Eclipse generated files #
+###########################
+.checkstyle
+.metadata/
+**/.settings/
+**/.classpath
+**/.project
+
+# IntelliJ generated files #
+############################
+.idea
+*.iml
+*.ipr
+*.iws
+
+# Java Files #
+##############
+*.class
+*.war
+*.ear
+payment-services/out
+payment-services/build
