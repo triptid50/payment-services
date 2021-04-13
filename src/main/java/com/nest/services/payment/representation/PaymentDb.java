@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -13,6 +14,9 @@ public class PaymentDb {
     List<Payment> payments;
 
     public List<Payment> getPayments() {
+        if(payments == null) {
+            return new ArrayList<>();
+        }
         return payments;
     }
 
