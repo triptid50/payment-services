@@ -9,7 +9,10 @@ import com.nest.services.payment.representation.Payment;
 import com.nest.services.payment.representation.PaymentDb;
 import com.nest.services.payment.representation.PaymentRequest;
 import com.nest.services.payment.representation.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -22,13 +25,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class PaymentDaoImpl implements PaymentDao {
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentDaoImpl.class);
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Autowired
     private PaymentDb paymentDb;
 
+    @Value("${payment.json.path}")
+    private String dataPath;
+
     @Override
     public void savePayment(PaymentRequest paymentRequest) {
+        LOGGER.debug("Processing payment request to store");
 
         int debitAccountIndex = searchPaymentForAccount(paymentRequest.getSourceAccount());
 
@@ -36,6 +45,8 @@ public class PaymentDaoImpl implements PaymentDao {
         BigDecimal availableBalance;
         Payment payment;
         if (debitAccountIndex == -1) {
+            LOGGER.debug("Requested debit account [{}-{}] does not exist so initially loading the balance before making the payment",
+                            paymentRequest.getSourceAccount().getSortCode(), paymentRequest.getSourceAccount().getAccountNumber());
             availableBalance = new BigDecimal("1000000");
             transactions.add(buildTransaction(paymentRequest, availableBalance));
 
@@ -45,6 +56,7 @@ public class PaymentDaoImpl implements PaymentDao {
                             .withTransactions(transactions)
                             .build();
         } else {
+            LOGGER.debug("Requested debit account [{}-{}] already exists", paymentRequest.getSourceAccount().getSortCode(), paymentRequest.getSourceAccount().getAccountNumber());
             payment = paymentDb.getPayments().get(debitAccountIndex);
             availableBalance = payment.getAvailableBalance();
             checkBalanceBeforePayment(paymentRequest.getAmount(), availableBalance);
@@ -63,20 +75,25 @@ public class PaymentDaoImpl implements PaymentDao {
     }
 
     private void checkBalanceBeforePayment(BigDecimal amount, BigDecimal balance) {
+        LOGGER.debug("Checking balance before making the payment");
         if (balance.subtract(amount).compareTo(BigDecimal.ZERO) == -1) {
             throw new PaymentException("Insufficient Funds");
         }
+        LOGGER.info("Balance check has been performed successfully");
     }
 
     private synchronized void savePaymentDetails(PaymentDb paymentDb) {
+        LOGGER.debug("Saving the payment details into JSON file");
         try {
-            objectMapper.writeValue(new File("src/main/resources/db/payment-db.json"), paymentDb);
+            MAPPER.writeValue(new File(dataPath), paymentDb);
         } catch (IOException e) {
             throw new ApiException("Failed to write data to file: " + e.getMessage());
         }
+        LOGGER.debug("Payment details have been successfully stored into JSON file");
     }
 
     private int searchPaymentForAccount(Account debitAccount) {
+        LOGGER.debug("Searching payment details for account into JSON file");
         AtomicInteger i = new AtomicInteger();
         return paymentDb.getPayments().stream()
                         .peek(v -> i.incrementAndGet())
@@ -93,7 +110,7 @@ public class PaymentDaoImpl implements PaymentDao {
     }
 
     static {
-        objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+        MAPPER.configure(SerializationFeature.INDENT_OUTPUT, true);
     }
 
 }
